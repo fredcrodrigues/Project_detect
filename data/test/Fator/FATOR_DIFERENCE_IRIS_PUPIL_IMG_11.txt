@@ -1,0 +1,2 @@
+Valor do fator de dilatação Calculado: 0.4403978142222964 Valor do Diametro da iris: 199.65297500168572 Valor do Diametro da Pupila: 87.92673379372117
+Valor da Diferença entre fatores (ERRO): 0.030268999140183606Diferença entre o diametro da íris: 1217.1527762033509 Diferença entre o diametro da Pupil: 578.9167142795881

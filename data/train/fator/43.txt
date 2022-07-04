@@ -1,0 +1,1 @@
+Fator de dilatação: 0.3388669892508854, Diametro Iris: 1150.103475899576, Diametro pupila: 389.7321022050676, Raio iris: 575.051737949788, Raio Pupila: 194.8660511025338
