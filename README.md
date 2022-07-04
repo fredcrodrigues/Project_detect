@@ -1,10 +1,8 @@
 ## Detecção da Iris e Pupila em imagens
 
-Este projeto apresenta a detetcção da iris e pupila em imagens, baseado em aprendizado profundo. São usadas para treinamento a base de dados pública UTIRIS [link](https://utiris.wordpress.com/2014/03/04/university-of-tehran-iris-image-repository/), que contém imagens de pupilas diltadas ou contraidas. A proposta e baseada no processo de seguementação dessas regiões usando o conjunto de daos adquiridos.
+Este projeto é baseado em aprendizado profundo(IA) para detectar a íris e pupila em imagens da região dos olhos. A base de dados pública UTIRIS [link](https://utiris.wordpress.com/2014/03/04/university-of-tehran-iris-image-repository/) é selecionada para testar o projeto desenvolvido. A proposta consiste no processo de segmentação dessas regiões.
 
-![Screenshot](/data/test/image/01.JPG)
-![Screenshot](/data/test/mask_iris/01.png)
-![Screenshot](/data/test/mask_pupil/01.png)
+![Screenshot](/01.png)
 
 ## Execução do Projeto
 
