@@ -1,63 +1,9 @@
 from skimage import measure
-from keras import models
-import matplotlib.pyplot as plt
-import pickle as pk
 import math
 import re
 import numpy as np
 import cv2 as cv
 
-
-############################ save filters of convolution ############################ 
-
-def filters(featurs):
-    ##alter path
-    path = '/mnt/c/Users/Fredson/Downloads/project_pupil/data/train/image/01.JPG'
-    img = cv.imread(path)
-    img = cv.resize(img, dsize=(224,224), interpolation=cv.INTER_CUBIC)
-
-    img = img/255.0
-    img = np.array(img)
-    img = img.astype(np.float32)
-    img = np.expand_dims(img, axis=0)
-
-    layer_names = [layer._name for layer in featurs.layers]
-    layer_output = [layer.output for layer in featurs.layers]
-   
-    activation_model = models.Model(inputs=featurs.input, outputs=layer_output) ## after is la featurs.layer[1].output
-    
-    f_activations = activation_model.predict(img)
-    for layer_name, feature in zip(layer_names, f_activations):
-      
-       if 'conv' in layer_name:
-            k = feature.shape[-1]
-            size = feature.shape[1]
-            
-            #scale = 20. / k
-            print(layer_name)
-        
-
-            for i in range(k):
-                feature_image =  feature[0,:,:,i]
-                plt.figure(figsize=(10,12))
-                plt.imshow(feature_image, cmap="gray")
-                plt.title(layer_name)
-                plt.grid(False)
-                plt.axis("off")
-                if 'block1'in layer_name:
-                    plt.savefig(f"/mnt/c/Users/Fredson/Downloads/project_pupil/results/filter/block1/{layer_name}_f_{i}.png")
-                if 'block2'in layer_name:
-                    plt.savefig(f"/mnt/c/Users/Fredson/Downloads/project_pupil/results/filter/block2/{layer_name}_f_{i}.png")
-                if 'block3'in layer_name:
-                    plt.savefig(f"/mnt/c/Users/Fredson/Downloads/project_pupil/results/filter/block3/{layer_name}_f_{i}.png")
-                if 'block4'in layer_name:
-                    plt.savefig(f"/mnt/c/Users/Fredson/Downloads/project_pupil/results/filter/block4/{layer_name}_f_{i}.png")
-                if 'block5'in layer_name:
-                    plt.savefig(f"/mnt/c/Users/Fredson/Downloads/project_pupil/results/filter/block5/{layer_name}_f_{i}.png")
-                else:
-                    break
-                print("End!")
-   
 
 ########### ####### CALCULATE DICE ##########################
 
@@ -100,59 +46,10 @@ def f_dilatation(iris, pupil):
    Ft = Dp/Di
    return Ft, Di,  Dp, ri, rp
 
-
-############################### ###########Load Archive TXT ##############
-
-def load_txt(path, i):
-    i += 1
-    ##ajustement in path 
-    if i < 10: 
-        path = path + "0" + str(i) + ".txt"
-    else:
-        path = path +  str(i) + ".txt"
-
-    ## tweak to get information from txt file
-    info = open( path, 'r')
-    infoPos = info.read()
-    infoPos = re.sub(r'[a-zA-Zç~ã,:]', "", infoPos)
-    infoPos = re.split(r'\s+', infoPos)
-    infoPos.pop(0)
-    return infoPos[0], infoPos[1], infoPos[2], infoPos[3], infoPos[4]
-
-
 def save_archive_txt(path, info):
     archive = open(path, 'w')
     archive.write(info)
     archive.close()
-
-################ Genration archve TXT FATOR #### #########################################
-
-def save_txt(values, o_path, t_path):
-  
-    o_path = re.sub(".png", ".txt", o_path)
-    t_path = re.sub(".png", ".txt", t_path)
-    o_archive = open(o_path, 'w' )
-    t_archive = open(t_path, 'w' )
-    o_archive.write(values)
-    t_archive.write(values)
-    o_archive.close()
-    t_archive.close()
-
-############### Erro factor #################################################
-
-def d_factor(i_small, p_small, path, i):
-   FtReal, DRealIris, DRealPupil, RRealIris, RRealPupil = load_txt(path, i)
-    ## fator calculado
-   Ft, Di,  Dp, ri, rp = f_dilatation(i_small, p_small)
-   DFator = calc_erro(FtReal, Ft)
-   DIris = calc_erro(DRealIris, Di)
-   DPupil = calc_erro(DRealPupil, Dp)
-    ## alter path
-   nPath = re.sub("/data/test/image/", "/results/output/fator/", path)
-   save_archive_txt(nPath + "FATOR_DIFERENCE_IRIS_PUPIL_IMG_" +  str(i) + ".txt" , "Value of Factor caluculate: " +  
-   str(Ft) + " Value diameter iris: " +  str(Di) + "Value Diameter Pupil: " + str(Dp) + "\nValue between factors (ERROR): " +  str(DFator) + "Diference between diameter iris: " + str(DIris) + 
-    "Difference Between factors: " +  str(DPupil))
-   return DFator, DIris, DPupil
 
 ###################### save a image ###############
 def r_images(img):

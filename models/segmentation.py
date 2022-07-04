@@ -7,7 +7,6 @@ from keras.optimizers import Adam
 from keras.layers.core import Activation
 from keras.applications import vgg16 
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from skimage import measure
 from utlis.attention import attention
 from utlis.losses import *
 from utlis.functions import *
@@ -40,14 +39,9 @@ class Unet():
         VGG16M = self.vgg 
         
         enconder = self.vgg.output
-      
 
-        ## -- block test -- ###
-        #up6 = Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(VGG16M.get_layer("block5_conv3").output)
-        #up6 = attention(VGG16M.get_layer("block4_conv3").output,VGG16M.get_layer("block5_conv3").output,256)
-        #up6 =  concatenate([VGG16M.get_layer("block5_conv3").output,VGG16M.get_layer("block4_conv3").output])
+
         up6 = concatenate([Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(VGG16M.get_layer("block5_conv3").output), VGG16M.get_layer("block4_conv3").output], axis=3)
-        up6 =  attention(VGG16M.get_layer("block4_conv3").output, up6, 256)
         conv6 = Conv2D(256, (3, 3), padding='same')(up6)
         conv6 = LeakyReLU()(conv6)
         conv6 = BatchNormalization()(conv6)
@@ -56,12 +50,8 @@ class Unet():
         conv6 = LeakyReLU()(conv6)
         conv6 = BatchNormalization()(conv6) 
 
-        ## -- block test -- ###
-        #up7 = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(conv6)
-        #up7 = attention(VGG16M.get_layer("block3_conv3").output, up7, 128)
-        #up7 =  concatenate(VGG16M.get_layer("block3_conv3").output, up7)
+       
         up7 = concatenate([Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(conv6), VGG16M.get_layer("block3_conv3").output], axis=3)
-        up7  =  attention(VGG16M.get_layer("block3_conv3").output, up7, 128)
         conv7 = Conv2D(128, (3, 3), padding='same')(up7)
         conv7 = LeakyReLU()(conv7)
         conv7 = BatchNormalization()(conv7)
@@ -71,12 +61,7 @@ class Unet():
         conv7 = BatchNormalization()(conv7)
 
 
-        ## -- block test -- ###
-        #up8 = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(conv7)
-        #up8 = attention(VGG16M.get_layer("block2_conv2").output, up8, 64)
-        #up8 =  concatenate(VGG16M.get_layer("block2_conv2").output, up8)
         up8 = concatenate([Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(conv7),VGG16M.get_layer("block2_conv2").output], axis=3)
-        up8 = attention(VGG16M.get_layer("block2_conv2").output, up8, 64)
         conv8 = Conv2D(64, (3, 3), padding='same')(up8)
         conv8 = LeakyReLU()(conv8)
         conv8 = BatchNormalization()(conv8)
@@ -86,12 +71,7 @@ class Unet():
         conv8 = BatchNormalization()(conv8)
         
         
-        ## -- block test -- ###
-        #up9 = Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same')(conv8)
-        #up9 = attention(VGG16M.get_layer("block1_conv2").output, up9, 32)
-        #up9 =  concatenate(VGG16M.get_layer("block1_conv2").output, up9)
         up9 = concatenate([Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same')(conv8), VGG16M.get_layer("block1_conv2").output], axis=3)
-        up9  = attention(VGG16M.get_layer("block1_conv2").output, up9, 32)
         conv9 = Conv2D(32, (3, 3), padding='same')(up9)
         conv9 = LeakyReLU()(conv9)
         conv9 = Dropout(0.2)(conv9)
@@ -202,10 +182,6 @@ class Unet():
         )
 
         mc = ModelCheckpoint('models/weigths/steps_utiris/model{epoch:001d}.h5' , monitor='val_loss', mode='min', verbose=1, save_best_only=True, save_freq='epoch')
-        
-       
-        print("Teste Model")
-        filters(self.model)
 
         self.model.summary()
         self.train_history=self.model.fit(X_train,(Y_train,Z_train),
@@ -304,10 +280,7 @@ class Unet():
             save_archive_txt( cwd + '/results/output/dice/IMG_IRIS_PUPIL_DICE' + str(i) + ".txt", 
                 " Value  Dice for Iris: " + str(diceIris) + " Value  Dice for Pupil: " + str(dicePupil))
 
-            ## calculate fator
-            DFator, DIris, DPupil = d_factor(i_small, p_small, cwd + '/data/test/Fator/', i)
-
-        
+           
         mean_dice_iris = np.mean(list_dice_iris)   
         desvs_dice_iris = st.stdev(mean_dice_iris)
 

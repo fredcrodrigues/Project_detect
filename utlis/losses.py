@@ -41,11 +41,3 @@ def dice_jonnison_loss(y_true, y_pred):
 
 
 
-'''
-def dice_coef(y_true, y_pred):
-    y_true_f = K.y_true
-    y_pred_f = K.y_pred
-
-	inter = K.sum(y_true_f +  y_pred_f)
-
-'''
